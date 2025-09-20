@@ -11,14 +11,15 @@
     </style>
 </head>
 <body>
-<form action="javascript:void(0)" id="form">
+    
+<form id="form" action="/reporte/filtro/pdf" method="get">
     <div class="container">
         <label for="superhero_name">SuperHero:</label>
         <input type="text" name="superhero_name" id="search">
         <br>
         <br>
         <div>
-            <textarea name="detalles" id="detalles"  rows="10" cols="40"></textarea>
+            <textarea id="detalles"  rows="10" cols="40" readonly></textarea>
             <button type="submit">PDF</button>
         </div>
     </div>
@@ -27,18 +28,19 @@
 <script>
 const busqueda = document.querySelector('#search');
 const detalles = document.querySelector('#detalles');
+const form= document.querySelector('#form')
 let timeoutId;
 
 busqueda.addEventListener('input', function() {
     clearTimeout(timeoutId);
 
-    timeoutId = setTimeout(function() {
+    timeoutId = setTimeout(async function() {
         const consulta = busqueda.value.trim();
         if (consulta.length === 0) {
             detalles.value = "";
             return;
         }
-                                        //este esvita que al ingresar caracteres especiales nos arroje algun error
+                                        //este evita que al ingresar caracteres especiales nos arroje algun error
         fetch(`/reporte/search?superhero_name=${encodeURIComponent(consulta)}`)
             .then(res => res.json())
             .then(data => {
@@ -49,6 +51,7 @@ busqueda.addEventListener('input', function() {
                     //el desorden de las siguientes 3 lineas es como se vera dentro del textarea
                     //si lo alineo va a salir mas a la derecha que la primera fila
                        `Nombre: ${row.full_name}
+Super heroe: ${row.superhero_name}
 Bando: ${row.alignment}
 Raza: ${row.race}`
                     ).join("\n\n");
